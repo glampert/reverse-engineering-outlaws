@@ -7,8 +7,8 @@
 
 int main(/* int argc, const char * argv[] */)
 {
-	//ol::LabArchiveReader reader { "outlaws.lab" };
-	//ol::LabArchiveWriter writer { "my_outlaws.lab", "dump/outlaws" };
+	ol::LabArchiveReader reader { "outlaws.lab" };
+	ol::LabArchiveWriter writer { "my_outlaws.lab", "dump/outlaws/" };
 
 	std::cout << "Nothing going on here right now. Come back later...\n";
 }

@@ -92,12 +92,32 @@ project (LIB_OL_NAME)
 	files { "source/ol/**.hpp", "source/ol/**.cpp" }
 
 ------------------------------------------------------
+-- lab_unpack command line tool:
+------------------------------------------------------
+
+project "lab_unpack"
+	kind        "ConsoleApp"
+	includedirs { "source/" }
+	files       { "source/lab_unpack.cpp" }
+	links       { LIB_OL_NAME }
+
+------------------------------------------------------
+-- lab_pack command line tool:
+------------------------------------------------------
+
+project "lab_pack"
+	kind        "ConsoleApp"
+	includedirs { "source/" }
+	files       { "source/lab_pack.cpp" }
+	links       { LIB_OL_NAME }
+
+------------------------------------------------------
 -- A temporary driver program:
 ------------------------------------------------------
 
-project "oltest"
+project "ol_test"
 	kind        "ConsoleApp"
-	includedirs { "source/"   }
-	files       { "source/main.cpp"  }
+	includedirs { "source/" }
+	files       { "source/ol_test.cpp" }
 	links       { LIB_OL_NAME }
 
