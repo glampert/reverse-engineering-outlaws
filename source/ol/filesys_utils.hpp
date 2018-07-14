@@ -14,6 +14,11 @@
 #ifndef OL_FILESYS_UTILS_HPP
 #define OL_FILESYS_UTILS_HPP
 
+#if defined(_WIN32)
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#endif
+
 #include <cstdio>
 #include <cstdint>
 #include <memory>
