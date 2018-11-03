@@ -22,9 +22,12 @@
 // POSIX includes:
 #include <sys/types.h>
 #include <sys/stat.h>
+#if defined(_WIN32)
+#include <direct.h>
+#else
 #include <unistd.h>
 #include <dirent.h>
-
+#endif
 namespace ol
 {
 namespace filesys
@@ -62,6 +65,23 @@ std::string getFilenameExtension(const std::string & filename, const bool includ
 // queryFileSize():
 // ========================================================
 
+#if defined(_WIN32)
+bool queryFileSize(const std::string & filename, std::size_t & sizeInBytes)
+{
+    assert(!filename.empty());
+
+    struct stat statBuf = {};
+    DWORD fileAttr = GetFileAttributesA(filename.c_str());
+    if (stat(filename.c_str(), &statBuf) == 0 && !(fileAttr & FILE_ATTRIBUTE_DIRECTORY))
+    {
+        sizeInBytes = static_cast<std::size_t>(statBuf.st_size);
+        return true;
+    }
+
+    sizeInBytes = 0;
+    return false;
+}
+#else
 bool queryFileSize(const std::string & filename, std::size_t & sizeInBytes)
 {
 	assert(!filename.empty());
@@ -76,11 +96,28 @@ bool queryFileSize(const std::string & filename, std::size_t & sizeInBytes)
 	sizeInBytes = 0;
 	return false;
 }
+#endif
 
 // ========================================================
 // createDirectory():
 // ========================================================
+#if defined(_WIN32)
+bool createDirectory(const std::string & dirPath)
+{
+    assert(!dirPath.empty());
 
+    DWORD fileAttr = GetFileAttributesA(dirPath.c_str());
+    // Directory already exists
+    if (fileAttr & FILE_ATTRIBUTE_DIRECTORY)
+        return false;
+
+    // Create the folder
+    if (_mkdir(dirPath.c_str()) != 0)
+        return false;
+
+    return true;
+}
+#else
 bool createDirectory(const std::string & dirPath)
 {
 	assert(!dirPath.empty());
@@ -105,6 +142,7 @@ bool createDirectory(const std::string & dirPath)
 
 	return true;
 }
+#endif
 
 // ========================================================
 // createPath():
@@ -143,6 +181,24 @@ bool createPath(const std::string & pathEndedWithSeparatorOrFilename)
 // listFilesInPath():
 // ========================================================
 
+#if defined(_WIN32)
+std::vector<std::string> listFilesInPath(const std::string & dirPath, const bool allowDotFiles)
+{
+    assert(!dirPath.empty());
+    std::vector<std::string> fileList;
+
+    WIN32_FIND_DATA fileData;
+    HANDLE hFile = FindFirstFileA((dirPath + "\\*").c_str(), &fileData);
+    if (hFile != INVALID_HANDLE_VALUE)
+    {
+        do {
+            fileList.push_back(fileData.cFileName);
+        } while (FindNextFile(hFile, &fileData));
+    }
+
+    return fileList;
+}
+#else
 std::vector<std::string> listFilesInPath(const std::string & dirPath, const bool allowDotFiles)
 {
 	assert(!dirPath.empty());
@@ -177,7 +233,7 @@ std::vector<std::string> listFilesInPath(const std::string & dirPath, const bool
 	closedir(dirPtr);
 	return fileList;
 }
-
+#endif
 // ========================================================
 // loadFile():
 // ========================================================

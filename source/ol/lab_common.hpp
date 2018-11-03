@@ -18,6 +18,9 @@
 #include <cctype>
 #include <string>
 #include <functional>
+#if defined(_WIN32)
+#include <algorithm>
+#endif
 
 namespace ol
 {
